@@ -178,12 +178,41 @@
             padding: 15px 20px;
             border-left: 5px solid var(--primary-blue);
             border-radius: 4px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-size: 17px;
         }
         
         .highlight-box.teal-accent {
             border-left-color: var(--secondary-teal);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Analysis List Styles */
+        .analysis-list {
+            list-style: none;
+            padding-left: 0 !important;
+        }
+
+        .analysis-list li {
+            background: var(--very-light-cyan);
+            padding: 12px 15px;
+            border-radius: 6px;
+            border-left: 4px solid var(--secondary-teal);
+            margin-bottom: 12px !important;
+        }
+
+        .analysis-list .demand-companies {
+            display: block;
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         /* Table Styles & Precise Alignments */
@@ -204,7 +233,7 @@
             vertical-align: middle;
         }
 
-        /* Specific column alignments to fix "Code" layout */
+        /* Specific column alignments */
         .col-sl { width: 5%; text-align: center; }
         .col-code { width: 12%; text-align: center; }
         .col-name { width: 25%; text-align: left; }
@@ -448,6 +477,10 @@
                 <div class="highlight-box">
                     <strong>Brief Note:</strong> STRABAG properly filled out their feedback forms, clearly indicating final selection status (Recommended next step). Candidates are categorized below into high priority and reserve list based on their definitive selections.
                 </div>
+                <div class="stats-row">
+                    <span class="badge top">Move directly to next stage: 5 Candidates</span>
+                    <span class="badge secondary">Reserve List: 7 Candidates</span>
+                </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -491,6 +524,10 @@
                 <div class="highlight-box">
                     <strong>Brief Note:</strong> Analysis is based on the 'Very Good' and 'Good' ratings in the 'Overall first impression' section, as final decision sections were left blank.
                 </div>
+                <div class="stats-row">
+                    <span class="badge top">Very Good: 3 Candidates</span>
+                    <span class="badge secondary">Good: 8 Candidates</span>
+                </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -533,6 +570,10 @@
                 <div class="highlight-box">
                     <strong>Brief Note:</strong> Candidate evaluation is entirely based on the 'Overall first impression' scores due to incomplete secondary pages on their feedback forms.
                 </div>
+                <div class="stats-row">
+                    <span class="badge top">Very Good: 3 Candidates</span>
+                    <span class="badge secondary">Good: 5 Candidates</span>
+                </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -571,6 +612,10 @@
             <div class="content-inner">
                 <div class="highlight-box">
                     <strong>Brief Note:</strong> Final selection categories were omitted. The candidates listed made the best initial impressions based on the first section's rating.
+                </div>
+                <div class="stats-row">
+                    <span class="badge top">Very Good: 1 Candidate</span>
+                    <span class="badge secondary">Good: 8 Candidates</span>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -612,6 +657,10 @@
                 <div class="highlight-box">
                     <strong>Brief Note:</strong> Candidate evaluations are determined strictly by the 'Overall first impression' matrix on the first page of their documentation.
                 </div>
+                <div class="stats-row">
+                    <span class="badge top">Very Good: 2 Candidates</span>
+                    <span class="badge secondary">Good: 4 Candidates</span>
+                </div>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -634,6 +683,77 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CROSS COMPANY SELECTION -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>6. Multi-Company Demand Analysis</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box teal-accent">
+                    <strong>Aggregate Overview:</strong> This section highlights the candidates who generated the highest demand across the network, being selected (in either Top or Reserve categories) by multiple German companies.
+                </div>
+                
+                <h3>Highest Demand (Selected by ALL 5 Companies)</h3>
+                <ul class="analysis-list">
+                    <li>
+                        <strong><span class="candidate-code">KH 08</span> Simranjit Singh</strong> 
+                        <span class="demand-companies">Selected by: STRABAG (Top), SPL Powerlines (Top), SPITZKE (Top), DB Bahnbau, BUG SE (Top)</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 09</span> Sruthi Sagar Sangeeth K K</strong> 
+                        <span class="demand-companies">Selected by: STRABAG (Top), SPL Powerlines, SPITZKE (Top), DB Bahnbau, BUG SE</span>
+                    </li>
+                </ul>
+
+                <h3>High Demand (Selected by 4 Companies)</h3>
+                <ul class="analysis-list">
+                    <li>
+                        <strong><span class="candidate-code">KH 02</span> Hameed Roshan PN</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPL Powerlines, SPITZKE, BUG SE</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 05</span> Sandip Phapale</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPITZKE, DB Bahnbau, BUG SE</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 18</span> Sanil P M</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPL Powerlines, SPITZKE, DB Bahnbau</span>
+                    </li>
+                </ul>
+
+                <h3>Moderate Demand (Selected by 3 Companies)</h3>
+                <ul class="analysis-list">
+                    <li>
+                        <strong><span class="candidate-code">KH 01</span> Albin Saju</strong> 
+                        <span class="demand-companies">Selected by: STRABAG (Top), SPITZKE (Top), DB Bahnbau (Top)</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 04</span> Nimish Thomas</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPL Powerlines (Top), BUG SE (Top)</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 06</span> Santosh Jadhav</strong> 
+                        <span class="demand-companies">Selected by: SPITZKE, DB Bahnbau, BUG SE</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 13</span> Gokul Krishna PK</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPITZKE, DB Bahnbau</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 15</span> Joyal PA</strong> 
+                        <span class="demand-companies">Selected by: STRABAG (Top), SPL Powerlines, DB Bahnbau</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 20</span> Yadhulkrishna T M</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPL Powerlines, DB Bahnbau</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
