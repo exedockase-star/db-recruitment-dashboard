@@ -186,6 +186,7 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzJybJzZPv-ZxmxkQfQ4FN3GFxmHTSuKcHJasYP4NvoK4dhHnKxkcm_iXlWNGXWI8U4/exec";
     let candidates = [];
     let localAttendanceCache = JSON.parse(localStorage.getItem('kase_local_cache') || '{}');
+    let localSpotRegistrations = JSON.parse(localStorage.getItem('kase_spot_registrations') || '[]');
 
     function loadSheetData(callback) {
         const callbackName = 'jsonp_cb_' + Math.round(Math.random() * 1000000);
@@ -193,16 +194,28 @@
             delete window[callbackName];
             if (scriptTag.parentNode) document.body.removeChild(scriptTag);
             
+            let mergedList = [];
             if (data && Array.isArray(data)) {
-                data.forEach(c => {
-                    let upperCode = c.code.toUpperCase();
-                    if (localAttendanceCache[upperCode]) {
-                        c.status = "Present";
-                        c.time = localAttendanceCache[upperCode].time;
-                    }
-                });
-                candidates = data;
+                mergedList = data;
             }
+
+            // Append any locally added spot registrations if not already in sheet
+            localSpotRegistrations.forEach(spot => {
+                if (!mergedList.some(c => c.code.toUpperCase() === spot.code.toUpperCase())) {
+                    mergedList.push(spot);
+                }
+            });
+
+            // Apply local attendance cache status overrides
+            mergedList.forEach(c => {
+                let upperCode = c.code.toUpperCase();
+                if (localAttendanceCache[upperCode]) {
+                    c.status = "Present";
+                    c.time = localAttendanceCache[upperCode].time;
+                }
+            });
+
+            candidates = mergedList;
             if (callback) callback(candidates);
         };
 
@@ -211,7 +224,18 @@
         scriptTag.onerror = function() {
             delete window[callbackName];
             if (scriptTag.parentNode) document.body.removeChild(scriptTag);
-            if (callback) callback(null);
+            
+            // Fallback to local cache if offline
+            let fallbackList = [...localSpotRegistrations];
+            fallbackList.forEach(c => {
+                let upperCode = c.code.toUpperCase();
+                if (localAttendanceCache[upperCode]) {
+                    c.status = "Present";
+                    c.time = localAttendanceCache[upperCode].time;
+                }
+            });
+            candidates = fallbackList;
+            if (callback) callback(candidates);
         };
         document.body.appendChild(scriptTag);
     }
@@ -226,13 +250,6 @@
         btn.innerText = "Checking...";
 
         loadSheetData(function(data) {
-            if (!data) {
-                btn.innerText = "Mark Attendance";
-                alertBox.className = "alert-box error";
-                alertBox.innerHTML = `⚠️ Connection Error. Please check your internet connection.`;
-                return;
-            }
-
             let candidate = candidates.find(c => c.code.toUpperCase() === rawCode);
 
             if (!candidate) {
@@ -287,6 +304,18 @@
 
         spotBtn.innerText = "Registering...";
         
+        let newSpot = {
+            code: code,
+            name: name + " (Spot)",
+            qual: qual,
+            status: "Present",
+            time: timeString
+        };
+
+        // Save to local spot list and attendance cache
+        localSpotRegistrations.push(newSpot);
+        localStorage.setItem('kase_spot_registrations', JSON.stringify(localSpotRegistrations));
+
         localAttendanceCache[code] = { time: timeString };
         localStorage.setItem('kase_local_cache', JSON.stringify(localAttendanceCache));
 
@@ -297,7 +326,7 @@
 
             const alertBox = document.getElementById('feedbackAlert');
             alertBox.className = "alert-box success";
-            alertBox.innerHTML = `✅ Spot Registration Synced to Sheet!<br>Code: <strong>${code} - ${name}</strong>`;
+            alertBox.innerHTML = `✅ Spot Registration Synced & Added!<br>Code: <strong>${code} - ${name}</strong>`;
             document.getElementById('scanCodeInput').focus();
         });
     }
@@ -327,7 +356,7 @@
             document.body.removeChild(form);
             document.body.removeChild(iframe);
             if (callback) callback();
-        }, 1000);
+        }, 1200);
     }
 
     function openAdminModal() {
