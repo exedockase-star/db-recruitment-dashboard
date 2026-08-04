@@ -3,443 +3,825 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KASE | Indo-German Skill Mobility & Recruitment Dashboard</title>
+    <title>KASE | Indo-German Skill Mobility Dashboard</title>
     
-    <!-- Google Fonts -->
+    <!-- Import Noto Serif Condensed from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Condensed:ital,wght@0,400;0,600;0,700;0,900&display=swap" rel="stylesheet">
 
     <style>
         :root {
+            /* KASE Official Brand Palette */
             --primary-blue: #0E5774;     
             --secondary-teal: #13A8B4;   
             --dark-navy: #063B52;        
             --light-teal: #67CDD5;       
-            --bg-cyan: #F4FBFC;  
+            --very-light-cyan: #EAF7F9;  
             --white: #FFFFFF;            
-            --text-main: #1E293B;
-            --text-muted: #64748B;
-            --success-color: #059669;
-            --success-bg: #ECFDF5;
-            --warning-color: #D97706;
-            --warning-bg: #FFFBEB;
-            --border-color: #E2E8F0;
-        }
-
-        * {
-            box-sizing: border-box;
+            
+            /* Status/UI Colors */
+            --text-main: #222222;
+            --text-muted: #555555;
+            --success-color: #27ae60;
+            --success-bg: #e8f8f5;
+            --warning-color: #d35400;
+            --warning-bg: #fef9e7;
+            --border-color: #c9e6eb;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-cyan);
+            font-family: 'Noto Serif Condensed', serif;
+            background-color: var(--very-light-cyan);
             color: var(--text-main);
             margin: 0;
-            padding: 40px 20px;
+            padding: 20px;
             line-height: 1.6;
+            font-size: 16px;
         }
 
-        .app-container {
-            max-width: 1100px;
+        .dashboard-container {
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Modern App Header */
-        .app-header {
+        /* Header Styles */
+        .header {
             background: var(--white);
-            padding: 35px 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(14, 87, 116, 0.08), 0 8px 10px -6px rgba(14, 87, 116, 0.08);
-            margin-bottom: 35px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(14, 87, 116, 0.1);
+            text-align: center;
+            margin-bottom: 30px;
+            border-top: 6px solid var(--secondary-teal);
+            border-bottom: 6px solid var(--primary-blue);
+        }
+
+        .header h1 {
+            margin: 0;
+            color: var(--primary-blue);
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin: 10px 0 0 0;
+            font-size: 18px;
+        }
+
+        .section-title {
+            color: var(--primary-blue);
+            font-size: 26px;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-teal);
+            font-weight: 700;
+        }
+
+        /* Accordion Styles */
+        .accordion-item {
+            background: var(--white);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(14, 87, 116, 0.08);
+            overflow: hidden;
             border: 1px solid var(--border-color);
+        }
+
+        .accordion-header {
+            width: 100%;
+            background: var(--white);
+            border: none;
+            padding: 20px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            font-family: inherit;
         }
 
-        .header-title h1 {
-            margin: 0 0 5px 0;
+        .accordion-header:hover {
+            background-color: var(--very-light-cyan);
+        }
+
+        .accordion-header h2 {
             color: var(--primary-blue);
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-
-        .header-title p {
-            color: var(--text-muted);
             margin: 0;
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        .badge-live {
-            background: var(--success-bg);
-            color: var(--success-color);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid rgba(5, 150, 105, 0.2);
-        }
-
-        .badge-live::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--success-color);
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        /* Section Cards */
-        .card {
-            background: var(--white);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-        }
-
-        .card-title {
-            color: var(--primary-blue);
             font-size: 20px;
             font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
-        .highlight-box {
-            background: var(--bg-cyan);
-            border-left: 4px solid var(--secondary-teal);
-            padding: 16px 20px;
-            border-radius: 0 8px 8px 0;
-            margin: 15px 0;
-            font-size: 15px;
+        .icon {
+            font-size: 26px;
+            font-weight: 400;
+            color: var(--secondary-teal);
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-header.active {
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--very-light-cyan);
+        }
+        
+        .accordion-header.active h2 {
             color: var(--dark-navy);
         }
 
-        /* Lists */
-        ul {
+        .accordion-header.active .icon {
+            transform: rotate(45deg);
+        }
+
+        /* Content Container */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background-color: var(--white);
+        }
+
+        .content-inner {
+            padding: 25px;
+        }
+
+        .content-inner p {
+            margin-top: 0;
+            font-size: 17px;
+        }
+
+        .content-inner ul {
+            margin-bottom: 0;
             padding-left: 20px;
-            margin: 10px 0;
+            font-size: 17px;
         }
 
-        li {
-            margin-bottom: 12px;
-            font-size: 15px;
+        .content-inner li {
+            margin-bottom: 15px;
         }
 
-        .inference-sub {
-            margin-top: 6px;
-            font-size: 14px;
-            color: var(--text-muted);
+        /* Inference Block */
+        .inference-block {
+            margin-top: 8px;
             padding-left: 12px;
-            border-left: 2px solid var(--light-teal);
+            border-left: 3px solid var(--secondary-teal);
+            color: var(--dark-navy);
+            font-size: 16px;
         }
 
-        /* Candidate Grid */
-        .candidate-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 12px;
-            margin-top: 15px;
+        /* Highlight Boxes */
+        .highlight-box {
+            background: var(--very-light-cyan);
+            padding: 15px 20px;
+            border-left: 5px solid var(--primary-blue);
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 17px;
+        }
+        
+        .highlight-box.teal-accent {
+            border-left-color: var(--secondary-teal);
         }
 
-        .candidate-card {
-            background: var(--bg-cyan);
-            border: 1px solid var(--border-color);
-            padding: 12px 16px;
-            border-radius: 10px;
+        /* Stats Row */
+        .stats-row {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .candidate-code {
-            font-family: monospace;
-            background: var(--white);
-            color: var(--primary-blue);
-            padding: 4px 8px;
+        /* Analysis List Styles */
+        .analysis-list {
+            list-style: none;
+            padding-left: 0 !important;
+        }
+
+        .analysis-list li {
+            background: var(--very-light-cyan);
+            padding: 12px 15px;
             border-radius: 6px;
-            font-size: 13px;
-            font-weight: 700;
-            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--secondary-teal);
+            margin-bottom: 12px !important;
         }
 
-        .candidate-name {
-            font-weight: 600;
-            font-size: 14px;
+        .analysis-list .demand-companies {
+            display: block;
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
-        /* Tables */
+        /* Table Styles & Precise Alignments */
         .table-responsive {
             overflow-x: auto;
-            margin-top: 15px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: 15px; 
+            margin-bottom: 10px;
         }
 
         th, td {
-            padding: 12px 14px;
+            padding: 12px 10px;
             border-bottom: 1px solid var(--border-color);
-            text-align: left;
+            vertical-align: middle;
         }
+
+        /* Specific column alignments */
+        .col-sl { width: 5%; text-align: center; }
+        .col-code { width: 12%; text-align: center; }
+        .col-name { width: 25%; text-align: left; }
+        .col-qual { width: 25%; text-align: left; }
+        .col-exp { width: 12%; text-align: center; }
+        .col-rating { width: 21%; text-align: left; }
 
         th {
             background-color: var(--primary-blue);
-            color: var(--white);
             font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--white);
+            white-space: nowrap;
+            font-size: 16px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
         }
 
         tbody tr:hover {
-            background-color: var(--bg-cyan);
+            background-color: var(--very-light-cyan);
         }
 
-        .badge-status {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 700;
-            display: inline-block;
-        }
-
-        .badge-status.top {
-            background: var(--success-bg);
-            color: var(--success-color);
-        }
-
-        .badge-status.sec {
-            background: var(--warning-bg);
-            color: var(--warning-color);
-        }
-
-        .stats-summary {
+        /* Badges */
+        .legend {
             display: flex;
-            gap: 12px;
-            margin-bottom: 15px;
+            justify-content: center;
+            gap: 20px;
             flex-wrap: wrap;
-        }
-
-        /* Analysis List */
-        .analysis-item {
-            background: var(--bg-cyan);
-            padding: 14px 18px;
-            border-radius: 10px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
-            margin-bottom: 12px;
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(14, 87, 116, 0.05);
         }
 
-        .analysis-item strong {
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            white-space: nowrap;
+        }
+
+        .badge.top {
+            background-color: var(--success-bg);
+            color: var(--success-color);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+        }
+
+        .badge.secondary {
+            background-color: var(--warning-bg);
+            color: var(--warning-color);
+            border: 1px solid rgba(211, 84, 0, 0.3);
+        }
+
+        .candidate-code {
+            font-family: monospace;
+            background: var(--very-light-cyan);
             color: var(--primary-blue);
-            font-size: 15px;
-        }
-
-        .analysis-meta {
-            display: block;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* Footer */
-        .app-footer {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--light-teal);
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
             text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-top: 40px;
-            font-weight: 500;
+        }
+
+        .candidate-name {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* Two Column Grid for Candidates */
+        .candidate-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 15px;
+        }
+        
+        .candidate-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .candidate-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(19, 168, 180, 0.15);
+            border-color: var(--light-teal);
         }
     </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="dashboard-container">
     
-    <!-- Modern Header -->
-    <div class="app-header">
-        <div class="header-title">
-            <h1>Kerala Academy for Skills Excellence</h1>
-            <p>DB AG & Supplier Network: Delegation Visit & Recruitment Dashboard</p>
-        </div>
-        <div class="badge-live">Official Portal Active</div>
+    <!-- Header Section -->
+    <div class="header">
+        <h1>Kerala Academy for Skills Excellence</h1>
+        <p><strong>DB AG & Supplier Network:</strong> Delegation Visit & Recruitment Dashboard</p>
     </div>
 
-    <!-- Section 1: Overview -->
-    <div class="card">
-        <h2 class="card-title">1. Delegation Visit Overview & Inferences</h2>
-        <p>From July 22nd to July 24th, 2026, a high-level 14-member delegation from Germany, comprising senior representatives from Deutsche Bahn (DB AG) and its specialized supplier network (BUG SE, Spitzke, SPL Powerlines, STRABAG), undertook an official visit to Kerala.</p>
-        
-        <div class="highlight-box">
-            <strong>Core Objective:</strong> To address critical technical skill shortages in Germany's infrastructure sectors by establishing a sustainable talent pipeline of vocational professionals from Kerala, starting with the specialized <strong>Overhead Line Technician</strong> role. A historic Letter of Intent (LoI) was officially exchanged.
-        </div>
+    <!-- SECTION 1: DELEGATION VISIT & INFERENCES -->
+    <h2 class="section-title">I. Delegation Visit Overview & Inferences</h2>
 
-        <h3 style="color: var(--primary-blue); font-size: 17px; margin-top: 25px;">Institutional Key Inferences</h3>
-        <ul>
-            <li><strong>GEC Barton Hill:</strong> Assessed technical ecosystem & Mercedes-Benz ADAM course. <div class="inference-sub">Inference: Fully prepared to introduce parallel German language training and upskilling.</div></li>
-            <li><strong>IIIC Kollam:</strong> Assessed heavy infrastructure and construction training capacity. <div class="inference-sub">Inference: Ideal venue for developing new rail modules and integrating IMRT concepts.</div></li>
-            <li><strong>Kochi Metro Rail Limited (KMRL):</strong> Site visit to Muttom Yard. <div class="inference-sub">Inference: Highly impressed by in-house CBTC training, robust safety standards, and solar net-neutrality targets.</div></li>
-            <li><strong>ITI Kalamassery:</strong> Evaluated foundational NCVT programs. <div class="inference-sub">Inference: Strong technical foundation, but requires targeted soft-skills and communication interventions prior to deployment.</div></li>
-            <li><strong>CUSAT:</strong> The tour's most actionable engagement. <div class="inference-sub">Inference: Presented the successful "Japan Model"—the exact structural blueprint needed for German rail integration.</div></li>
-        </ul>
-    </div>
-
-    <!-- Section 2: Candidate Roster -->
-    <div class="card">
-        <h2 class="card-title">2. Speed Dating Session Participants (18 Candidates)</h2>
-        <p>Out of the 20 students mobilized, 18 successfully attended the pre-screening 'Speed Dating' session at the Goethe Zentrum:</p>
-        
-        <div class="candidate-grid">
-            <div class="candidate-card"><span class="candidate-code">KH 01</span> <span class="candidate-name">Albin Saju</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 02</span> <span class="candidate-name">Hameed Roshan PN</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 04</span> <span class="candidate-name">Nimish Thomas</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 05</span> <span class="candidate-name">Sandip Phapale</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 06</span> <span class="candidate-name">Santosh Jadhav</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 07</span> <span class="candidate-name">Shanil Kumar K S</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 08</span> <span class="candidate-name">Simranjit Singh</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 09</span> <span class="candidate-name">Sruthi Sagar Sangeeth</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 10</span> <span class="candidate-name">Abel CJ</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 11</span> <span class="candidate-name">Anandhan Asokan</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 12</span> <span class="candidate-name">Aswin Subramanyan</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 13</span> <span class="candidate-name">Gokul Krishna PK</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 14</span> <span class="candidate-name">Joshwa K.S</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 15</span> <span class="candidate-name">Joyal PA</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 17</span> <span class="candidate-name">Salman Faris Noordeen</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 18</span> <span class="candidate-name">Sanil P M</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 19</span> <span class="candidate-name">Sooraj K.R</span></div>
-            <div class="candidate-card"><span class="candidate-code">KH 20</span> <span class="candidate-name">Yadhulkrishna T M</span></div>
+    <!-- Brief About Visit -->
+    <div class="accordion-item">
+        <button class="accordion-header active">
+            <h2>1. Brief About the Visit</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <p>From July 22nd to July 24th, 2026, a high-level 14-member delegation from Germany, comprising senior representatives from Deutsche Bahn (DB AG) and its specialized supplier network (BUG SE, Spitzke, SPL Powerlines, STRABAG), undertook an official visit to Kerala.</p>
+                <div class="highlight-box">
+                    <strong>Core Objective:</strong> To address critical technical skill shortages in Germany's infrastructure sectors by establishing a sustainable talent pipeline of vocational professionals from Kerala, starting with the specialized <strong>Overhead Line Technician</strong> role. A historic Letter of Intent (LoI) was officially exchanged to formalize this strategic mobility pathway.
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Section 3: Company Feedback -->
-    <div class="card">
-        <h2 class="card-title">3. Company-Wise Feedback & Evaluations</h2>
-        
-        <!-- STRABAG -->
-        <h3 style="color: var(--primary-blue); font-size: 16px; margin-top: 20px;">1. STRABAG Rail Fahrleitungen GmbH</h3>
-        <div class="stats-summary">
-            <span class="badge-status top">Move to Next Stage: 5 Candidates</span>
-            <span class="badge-status sec">Reserve List: 7 Candidates</span>
-        </div>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr><th>Code</th><th>Name</th><th>Qualification</th><th>Exp.</th><th>Status</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><span class="candidate-code">KH 01</span></td><td><strong>Albin Saju</strong></td><td>Diploma in Electronics</td><td>2+ Years</td><td><span class="badge-status top">Next Stage</span></td></tr>
-                    <tr><td><span class="candidate-code">KH 08</span></td><td><strong>Simranjit Singh</strong></td><td>Cert in Electrical Engg.</td><td>5+ Years</td><td><span class="badge-status top">Next Stage</span></td></tr>
-                    <tr><td><span class="candidate-code">KH 09</span></td><td><strong>Sruthi Sagar Sangeeth</strong></td><td>Diploma in Mechatronics</td><td>1.5 Years</td><td><span class="badge-status top">Next Stage</span></td></tr>
-                    <tr><td><span class="candidate-code">KH 14</span></td><td><strong>Joshwa K.S</strong></td><td>ITI Electrical Systems</td><td>&lt;1 Year</td><td><span class="badge-status top">Next Stage</span></td></tr>
-                    <tr><td><span class="candidate-code">KH 15</span></td><td><strong>Joyal PA</strong></td><td>ITI</td><td>1+ Years</td><td><span class="badge-status top">Next Stage</span></td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- SPL Powerlines -->
-        <h3 style="color: var(--primary-blue); font-size: 16px; margin-top: 30px;">2. SPL Powerlines</h3>
-        <div class="stats-summary">
-            <span class="badge-status top">Very Good: 3 Candidates</span>
-            <span class="badge-status sec">Good: 8 Candidates</span>
-        </div>
-
-        <!-- SPITZKE -->
-        <h3 style="color: var(--primary-blue); font-size: 16px; margin-top: 30px;">3. SPITZKE</h3>
-        <div class="stats-summary">
-            <span class="badge-status top">Very Good: 3 Candidates</span>
-            <span class="badge-status sec">Good: 5 Candidates</span>
-        </div>
-
-        <!-- DB Bahnbau Gruppe -->
-        <h3 style="color: var(--primary-blue); font-size: 16px; margin-top: 30px;">4. DB Bahnbau Gruppe</h3>
-        <div class="stats-summary">
-            <span class="badge-status top">Very Good: 1 Candidate</span>
-            <span class="badge-status sec">Good: 8 Candidates</span>
-        </div>
-
-        <!-- BUG SE -->
-        <h3 style="color: var(--primary-blue); font-size: 16px; margin-top: 30px;">5. BUG SE</h3>
-        <div class="stats-summary">
-            <span class="badge-status top">Very Good: 2 Candidates</span>
-            <span class="badge-status sec">Good: 4 Candidates</span>
+    <!-- Institutional Visits -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>2. Institutional Visits & Main Inferences</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <ul>
+                    <li>
+                        <strong>GEC Barton Hill:</strong> The delegation assessed the premium technical ecosystem and Mercedes-Benz ADAM course. 
+                        <div class="inference-block"><em><strong>Inference:</strong></em> The institution is highly flexible and completely ready to introduce parallel German language training and targeted upskilling for ITI candidates.</div>
+                    </li>
+                    <li>
+                        <strong>IIIC Kollam:</strong> Assessed for heavy infrastructure and construction training capacity. 
+                        <div class="inference-block"><em><strong>Inference:</strong></em> The large-scale facilities and advanced simulators make it an ideal venue for developing new "two-way rail" modules and integrating the IMRT concept.</div>
+                    </li>
+                    <li>
+                        <strong>Kochi Metro Rail Limited (KMRL):</strong> A site visit to the Muttom Yard to benchmark local operational standards. 
+                        <div class="inference-block"><em><strong>Inference:</strong></em> The delegation was highly impressed by KMRL's in-house CBTC training, robust safety protocols, 100% solar net-neutrality goals by 2030, and seamless multimodal integration.</div>
+                    </li>
+                    <li>
+                        <strong>ITI Kalamassery:</strong> Evaluated foundational NCVT-accredited vocational programs. 
+                        <div class="inference-block"><em><strong>Inference:</strong></em> While technical fundamentals are strong, a critical communication barrier exists among graduates, necessitating rigorous, customized language and soft-skills interventions prior to deployment.</div>
+                    </li>
+                    <li>
+                        <strong>CUSAT:</strong> The most actionable engagement of the tour. 
+                        <div class="inference-block"><em><strong>Inference:</strong></em> CUSAT presented their successful "Japan Model"—a structured, end-to-end framework encompassing language training, internships, and cultural integration. The delegation identified this as the exact structural blueprint needed for the German rail integration.</div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
-    <!-- Section 4: Multi-Company Demand Analysis -->
-    <div class="card">
-        <h2 class="card-title">4. Multi-Company Demand Analysis</h2>
-        <div class="highlight-box">
-            <strong>Aggregate Overview:</strong> Highlighting candidates generating the highest cross-company demand across all 5 German entities.
-        </div>
-
-        <h3 style="color: var(--primary-blue); font-size: 15px; margin-top: 20px;">Highest Demand (Selected by ALL 5 Companies)</h3>
-        <div class="analysis-item">
-            <strong><span class="candidate-code">KH 08</span> Simranjit Singh</strong>
-            <span class="analysis-meta">Selected by: STRABAG (Top), SPL Powerlines (Top), SPITZKE (Top), DB Bahnbau, BUG SE (Top)</span>
-        </div>
-        <div class="analysis-item">
-            <strong><span class="candidate-code">KH 09</span> Sruthi Sagar Sangeeth K K</strong>
-            <span class="analysis-meta">Selected by: STRABAG (Top), SPL Powerlines, SPITZKE (Top), DB Bahnbau, BUG SE</span>
-        </div>
-
-        <h3 style="color: var(--primary-blue); font-size: 15px; margin-top: 20px;">High Demand (Selected by 4 Companies)</h3>
-        <div class="analysis-item">
-            <strong><span class="candidate-code">KH 02</span> Hameed Roshan PN</strong>
-            <span class="analysis-meta">Selected by: STRABAG, SPL Powerlines, SPITZKE, BUG SE</span>
-        </div>
-        <div class="analysis-item">
-            <strong><span class="candidate-code">KH 05</span> Sandip Phapale</strong>
-            <span class="analysis-meta">Selected by: STRABAG, SPITZKE, DB Bahnbau, BUG SE</span>
-        </div>
-        <div class="analysis-item">
-            <strong><span class="candidate-code">KH 18</span> Sanil P M</strong>
-            <span class="analysis-meta">Selected by: STRABAG, SPL Powerlines, SPITZKE, DB Bahnbau</span>
+    <!-- Way Forward (From Report) -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>3. The Way Forward (Strategic Policy Steps)</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box teal-accent">
+                    The following long-term policy actions were established by KASE to institutionalize the pathway following the delegation's departure:
+                </div>
+                <ul>
+                    <li><strong>MoU Formalization:</strong> Translate the exchanged Letter of Intent (LoI) into concrete, mutually agreed-upon action points within a formal Memorandum of Understanding.</li>
+                    <li><strong>Curriculum Harmonization:</strong> Transmit CUSAT's engineering curricula to German technical teams to identify gaps and formulate supplementary VET-standard training modules.</li>
+                    <li><strong>Adapting the "Japan Model":</strong> Officially structure the new Indo-German Mobility Framework utilizing CUSAT's existing model as the foundational blueprint, incorporating free after-hours language training.</li>
+                    <li><strong>Train-the-Trainer Capacity Building:</strong> Identify local Indian technical trainers to undergo specialized training in Germany to counteract the shortage of German trainers available for deployment in India.</li>
+                    <li><strong>InnoTrans 2026 Delegation:</strong> Coordinate a high-level state delegation (including the Hon'ble Minister and Managing Director, KASE) to attend the InnoTrans trade fair in Berlin in September 2026 to lock in bilateral agreements.</li>
+                </ul>
+            </div>
         </div>
     </div>
 
-    <!-- Section 5: Strategic Action Plan -->
-    <div class="card">
-        <h2 class="card-title">5. Strategic Action Plan (27 Vacancy Mobilization)</h2>
-        <div class="highlight-box" style="border-left-color: var(--primary-blue);">
-            <strong>Urgent Mandate:</strong> To fill the 27 critical Overhead Line Technician vacancies prior to the InnoTrans exhibition in September, KASE will execute a rapid mobilization strategy.
+    <!-- SECTION 2: SPEED DATING CANDIDATES -->
+    <h2 class="section-title">II. Speed Dating Session Participants</h2>
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>List of Attending Candidates</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <p>Out of the 20 students mobilized, 18 successfully attended the pre-screening 'Speed Dating' session at the Goethe Zentrum. Below is the roster of the 18 participating candidates:</p>
+                <div class="candidate-grid">
+                    <div class="candidate-card"><span class="candidate-code">KH 01</span> <span class="candidate-name">Albin Saju</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 02</span> <span class="candidate-name">Hameed Roshan PN</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 04</span> <span class="candidate-name">Nimish Thomas</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 05</span> <span class="candidate-name">Sandip Phapale</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 06</span> <span class="candidate-name">Santosh Jadhav</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 07</span> <span class="candidate-name">Shanil Kumar K S</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 08</span> <span class="candidate-name">Simranjit Singh</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 09</span> <span class="candidate-name">Sruthi Sagar Sangeeth K K</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 10</span> <span class="candidate-name">Abel CJ</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 11</span> <span class="candidate-name">Anandhan Asokan</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 12</span> <span class="candidate-name">Aswin Subramanyan</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 13</span> <span class="candidate-name">Gokul Krishna PK</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 14</span> <span class="candidate-name">Joshwa K.S</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 15</span> <span class="candidate-name">Joyal PA</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 17</span> <span class="candidate-name">Salman Faris Noordeen</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 18</span> <span class="candidate-name">Sanil P M</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 19</span> <span class="candidate-name">Sooraj K.R</span></div>
+                    <div class="candidate-card"><span class="candidate-code">KH 20</span> <span class="candidate-name">Yadhulkrishna T M</span></div>
+                </div>
+            </div>
         </div>
-        
-        <h3 style="color: var(--primary-blue); font-size: 16px;">Phase 1: Direct Mobilization (The Fast Track)</h3>
-        <ul>
-            <li><strong>Target Profile:</strong> B.Tech/Diploma holders in Electrical/Mechanical streams, aged 18-35.</li>
-            <li><strong>Institutional Network Activation:</strong> Coordinate with KMRL and KSEB technical heads to access active OHE contract workforces.</li>
-            <li><strong>Polytechnic & Engineering Outreach:</strong> Direct engagement with college principals and placement officers.</li>
-        </ul>
-
-        <h3 style="color: var(--primary-blue); font-size: 16px; margin-top: 20px;">Phase 2: Digital Campaign & Virtual Pre-Screening</h3>
-        <ul>
-            <li><strong>Targeted Media:</strong> Deploy high-definition digital assets in Malayalam via WhatsApp groups.</li>
-            <li><strong>Rapid Filtration:</strong> Utilize a dedicated Google Form portal for candidate intake.</li>
-            <li><strong>Virtual Speed Interviews:</strong> Conduct immediate screening for communication and physical readiness.</li>
-        </ul>
     </div>
 
-    <div class="app-footer">
-        Kerala Academy for Skills Excellence (KASE) &copy; 2026 | Indo-German Mobility Framework
+    <!-- SECTION 3: COMPANY FEEDBACK -->
+    <h2 class="section-title">III. Company-Wise Feedback & Evaluation</h2>
+    <div class="legend">
+        <span class="badge top">🟢 Top Priority (Move to next stage / Very Good)</span>
+        <span class="badge secondary">🟡 Secondary (Reserve list / Good)</span>
+    </div>
+    <br>
+
+    <!-- STRABAG -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>1. STRABAG Rail Fahrleitungen GmbH</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box">
+                    <strong>Brief Note:</strong> STRABAG properly filled out their feedback forms, clearly indicating final selection status (Recommended next step). Candidates are categorized below into high priority and reserve list based on their definitive selections.
+                </div>
+                <div class="stats-row">
+                    <span class="badge top">Move directly to next stage: 5 Candidates</span>
+                    <span class="badge secondary">Reserve List: 7 Candidates</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-sl">Sl No.</th>
+                                <th class="col-code">Code</th>
+                                <th class="col-name">Name</th>
+                                <th class="col-qual">Qualification</th>
+                                <th class="col-exp">Exp. (Years)</th>
+                                <th class="col-rating">Rating / Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="col-sl">1</td><td class="col-code"><span class="candidate-code">KH 01</span></td><td class="candidate-name col-name">Albin Saju</td><td class="col-qual">Diploma in Electronics</td><td class="col-exp">2+ Years</td><td class="col-rating"><span class="badge top">🟢 Move directly to next stage</span></td></tr>
+                            <tr><td class="col-sl">2</td><td class="col-code"><span class="candidate-code">KH 08</span></td><td class="candidate-name col-name">Simranjit Singh</td><td class="col-qual">Cert in Electrical Engg.</td><td class="col-exp">5+ Years</td><td class="col-rating"><span class="badge top">🟢 Move directly to next stage</span></td></tr>
+                            <tr><td class="col-sl">3</td><td class="col-code"><span class="candidate-code">KH 09</span></td><td class="candidate-name col-name">Sruthi Sagar Sangeeth</td><td class="col-qual">Diploma in Mechatronics</td><td class="col-exp">1.5 Years</td><td class="col-rating"><span class="badge top">🟢 Move directly to next stage</span></td></tr>
+                            <tr><td class="col-sl">4</td><td class="col-code"><span class="candidate-code">KH 14</span></td><td class="candidate-name col-name">Joshwa K.S</td><td class="col-qual">ITI Electrical Systems</td><td class="col-exp">Trainee / &lt;1 Year</td><td class="col-rating"><span class="badge top">🟢 Move directly to next stage</span></td></tr>
+                            <tr><td class="col-sl">5</td><td class="col-code"><span class="candidate-code">KH 15</span></td><td class="candidate-name col-name">Joyal PA</td><td class="col-qual">ITI</td><td class="col-exp">1+ Years</td><td class="col-rating"><span class="badge top">🟢 Move directly to next stage</span></td></tr>
+                            <tr><td class="col-sl">6</td><td class="col-code"><span class="candidate-code">KH 02</span></td><td class="candidate-name col-name">Hameed Roshan PN</td><td class="col-qual">Engineering Diploma</td><td class="col-exp">2.5 Years</td><td class="col-rating"><span class="badge secondary">🟡 Reserve / Potentially Interesting</span></td></tr>
+                            <tr><td class="col-sl">7</td><td class="col-code"><span class="candidate-code">KH 04</span></td><td class="candidate-name col-name">Nimish Thomas</td><td class="col-qual">Diploma in Electronics Engg.</td><td class="col-exp">7+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Reserve</span></td></tr>
+                            <tr><td class="col-sl">8</td><td class="col-code"><span class="candidate-code">KH 05</span></td><td class="candidate-name col-name">Sandip Phapale</td><td class="col-qual">B.Tech / Diploma</td><td class="col-exp">13+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Reserve</span></td></tr>
+                            <tr><td class="col-sl">9</td><td class="col-code"><span class="candidate-code">KH 13</span></td><td class="candidate-name col-name">Gokul Krishna PK</td><td class="col-qual">ITI Electrician / NAC</td><td class="col-exp">4+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Reserve</span></td></tr>
+                            <tr><td class="col-sl">10</td><td class="col-code"><span class="candidate-code">KH 17</span></td><td class="candidate-name col-name">Salman Faris Noordeen</td><td class="col-qual">ITI Electrician</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Reserve</span></td></tr>
+                            <tr><td class="col-sl">11</td><td class="col-code"><span class="candidate-code">KH 18</span></td><td class="candidate-name col-name">Sanil P M</td><td class="col-qual">ITI Electrical Engg.</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Reserve</span></td></tr>
+                            <tr><td class="col-sl">12</td><td class="col-code"><span class="candidate-code">KH 20</span></td><td class="candidate-name col-name">Yadhulkrishna T M</td><td class="col-qual">Pursuing ITI / BA History</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Reserve</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPL Powerlines -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>2. SPL Powerlines</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box">
+                    <strong>Brief Note:</strong> Analysis is based on the 'Very Good' and 'Good' ratings in the 'Overall first impression' section, as final decision sections were left blank.
+                </div>
+                <div class="stats-row">
+                    <span class="badge top">Very Good: 3 Candidates</span>
+                    <span class="badge secondary">Good: 8 Candidates</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-sl">Sl No.</th>
+                                <th class="col-code">Code</th>
+                                <th class="col-name">Name</th>
+                                <th class="col-qual">Qualification</th>
+                                <th class="col-exp">Exp. (Years)</th>
+                                <th class="col-rating">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="col-sl">1</td><td class="col-code"><span class="candidate-code">KH 04</span></td><td class="candidate-name col-name">Nimish Thomas</td><td class="col-qual">Diploma in Electronics Engg.</td><td class="col-exp">7+ Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">2</td><td class="col-code"><span class="candidate-code">KH 07</span></td><td class="candidate-name col-name">Shanil Kumar K S</td><td class="col-qual">B.Tech / Diploma Mech.</td><td class="col-exp">2 Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">3</td><td class="col-code"><span class="candidate-code">KH 08</span></td><td class="candidate-name col-name">Simranjit Singh</td><td class="col-qual">Cert in Electrical Engg.</td><td class="col-exp">5+ Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">4</td><td class="col-code"><span class="candidate-code">KH 02</span></td><td class="candidate-name col-name">Hameed Roshan PN</td><td class="col-qual">Engineering Diploma</td><td class="col-exp">2.5 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">5</td><td class="col-code"><span class="candidate-code">KH 09</span></td><td class="candidate-name col-name">Sruthi Sagar Sangeeth</td><td class="col-qual">Diploma in Mechatronics</td><td class="col-exp">1.5 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">6</td><td class="col-code"><span class="candidate-code">KH 10</span></td><td class="candidate-name col-name">Abel CJ</td><td class="col-qual">ITI Wireman</td><td class="col-exp">Trainee / &lt;1 Year</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">7</td><td class="col-code"><span class="candidate-code">KH 15</span></td><td class="candidate-name col-name">Joyal PA</td><td class="col-qual">ITI</td><td class="col-exp">1+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">8</td><td class="col-code"><span class="candidate-code">KH 17</span></td><td class="candidate-name col-name">Salman Faris Noordeen</td><td class="col-qual">ITI Electrician</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">9</td><td class="col-code"><span class="candidate-code">KH 18</span></td><td class="candidate-name col-name">Sanil P M</td><td class="col-qual">ITI Electrical Engg.</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">10</td><td class="col-code"><span class="candidate-code">KH 19</span></td><td class="candidate-name col-name">Sooraj K.R</td><td class="col-qual">ITI</td><td class="col-exp">1 Year</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">11</td><td class="col-code"><span class="candidate-code">KH 20</span></td><td class="candidate-name col-name">Yadhulkrishna T M</td><td class="col-qual">Pursuing ITI / BA History</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPITZKE -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>3. SPITZKE</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box">
+                    <strong>Brief Note:</strong> Candidate evaluation is entirely based on the 'Overall first impression' scores due to incomplete secondary pages on their feedback forms.
+                </div>
+                <div class="stats-row">
+                    <span class="badge top">Very Good: 3 Candidates</span>
+                    <span class="badge secondary">Good: 5 Candidates</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-sl">Sl No.</th>
+                                <th class="col-code">Code</th>
+                                <th class="col-name">Name</th>
+                                <th class="col-qual">Qualification</th>
+                                <th class="col-exp">Exp. (Years)</th>
+                                <th class="col-rating">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="col-sl">1</td><td class="col-code"><span class="candidate-code">KH 01</span></td><td class="candidate-name col-name">Albin Saju</td><td class="col-qual">Diploma in Electronics</td><td class="col-exp">2+ Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">2</td><td class="col-code"><span class="candidate-code">KH 08</span></td><td class="candidate-name col-name">Simranjit Singh</td><td class="col-qual">Cert in Electrical Engg.</td><td class="col-exp">5+ Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">3</td><td class="col-code"><span class="candidate-code">KH 09</span></td><td class="candidate-name col-name">Sruthi Sagar Sangeeth</td><td class="col-qual">Diploma in Mechatronics</td><td class="col-exp">1.5 Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">4</td><td class="col-code"><span class="candidate-code">KH 02</span></td><td class="candidate-name col-name">Hameed Roshan PN</td><td class="col-qual">Engineering Diploma</td><td class="col-exp">2.5 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">5</td><td class="col-code"><span class="candidate-code">KH 05</span></td><td class="candidate-name col-name">Sandip Phapale</td><td class="col-qual">B.Tech / Diploma</td><td class="col-exp">13+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">6</td><td class="col-code"><span class="candidate-code">KH 06</span></td><td class="candidate-name col-name">Santosh Jadhav</td><td class="col-qual">Diploma / ITI</td><td class="col-exp">6+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">7</td><td class="col-code"><span class="candidate-code">KH 13</span></td><td class="candidate-name col-name">Gokul Krishna PK</td><td class="col-qual">ITI Electrician / NAC</td><td class="col-exp">4+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">8</td><td class="col-code"><span class="candidate-code">KH 18</span></td><td class="candidate-name col-name">Sanil P M</td><td class="col-qual">ITI Electrical Engg.</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DB Bahnbau -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>4. DB Bahnbau Gruppe</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box">
+                    <strong>Brief Note:</strong> Final selection categories were omitted. The candidates listed made the best initial impressions based on the first section's rating.
+                </div>
+                <div class="stats-row">
+                    <span class="badge top">Very Good: 1 Candidate</span>
+                    <span class="badge secondary">Good: 8 Candidates</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-sl">Sl No.</th>
+                                <th class="col-code">Code</th>
+                                <th class="col-name">Name</th>
+                                <th class="col-qual">Qualification</th>
+                                <th class="col-exp">Exp. (Years)</th>
+                                <th class="col-rating">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="col-sl">1</td><td class="col-code"><span class="candidate-code">KH 01</span></td><td class="candidate-name col-name">Albin Saju</td><td class="col-qual">Diploma in Electronics</td><td class="col-exp">2+ Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">2</td><td class="col-code"><span class="candidate-code">KH 05</span></td><td class="candidate-name col-name">Sandip Phapale</td><td class="col-qual">B.Tech / Diploma</td><td class="col-exp">13+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">3</td><td class="col-code"><span class="candidate-code">KH 06</span></td><td class="candidate-name col-name">Santosh Jadhav</td><td class="col-qual">Diploma / ITI</td><td class="col-exp">6+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">4</td><td class="col-code"><span class="candidate-code">KH 08</span></td><td class="candidate-name col-name">Simranjit Singh</td><td class="col-qual">Cert in Electrical Engg.</td><td class="col-exp">5+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">5</td><td class="col-code"><span class="candidate-code">KH 09</span></td><td class="candidate-name col-name">Sruthi Sagar Sangeeth</td><td class="col-qual">Diploma in Mechatronics</td><td class="col-exp">1.5 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">6</td><td class="col-code"><span class="candidate-code">KH 13</span></td><td class="candidate-name col-name">Gokul Krishna PK</td><td class="col-qual">ITI Electrician / NAC</td><td class="col-exp">4+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">7</td><td class="col-code"><span class="candidate-code">KH 15</span></td><td class="candidate-name col-name">Joyal PA</td><td class="col-qual">ITI</td><td class="col-exp">1+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">8</td><td class="col-code"><span class="candidate-code">KH 18</span></td><td class="candidate-name col-name">Sanil P M</td><td class="col-qual">ITI Electrical Engg.</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">9</td><td class="col-code"><span class="candidate-code">KH 20</span></td><td class="candidate-name col-name">Yadhulkrishna T M</td><td class="col-qual">Pursuing ITI / BA History</td><td class="col-exp">4 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUG SE -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>5. BUG SE</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box">
+                    <strong>Brief Note:</strong> Candidate evaluations are determined strictly by the 'Overall first impression' matrix on the first page of their documentation.
+                </div>
+                <div class="stats-row">
+                    <span class="badge top">Very Good: 2 Candidates</span>
+                    <span class="badge secondary">Good: 4 Candidates</span>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="col-sl">Sl No.</th>
+                                <th class="col-code">Code</th>
+                                <th class="col-name">Name</th>
+                                <th class="col-qual">Qualification</th>
+                                <th class="col-exp">Exp. (Years)</th>
+                                <th class="col-rating">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="col-sl">1</td><td class="col-code"><span class="candidate-code">KH 04</span></td><td class="candidate-name col-name">Nimish Thomas</td><td class="col-qual">Diploma in Electronics Engg.</td><td class="col-exp">7+ Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">2</td><td class="col-code"><span class="candidate-code">KH 08</span></td><td class="candidate-name col-name">Simranjit Singh</td><td class="col-qual">Cert in Electrical Engg.</td><td class="col-exp">5+ Years</td><td class="col-rating"><span class="badge top">🟢 Very Good</span></td></tr>
+                            <tr><td class="col-sl">3</td><td class="col-code"><span class="candidate-code">KH 02</span></td><td class="candidate-name col-name">Hameed Roshan PN</td><td class="col-qual">Engineering Diploma</td><td class="col-exp">2.5 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">4</td><td class="col-code"><span class="candidate-code">KH 05</span></td><td class="candidate-name col-name">Sandip Phapale</td><td class="col-qual">B.Tech / Diploma</td><td class="col-exp">13+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">5</td><td class="col-code"><span class="candidate-code">KH 06</span></td><td class="candidate-name col-name">Santosh Jadhav</td><td class="col-qual">Diploma / ITI</td><td class="col-exp">6+ Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                            <tr><td class="col-sl">6</td><td class="col-code"><span class="candidate-code">KH 09</span></td><td class="candidate-name col-name">Sruthi Sagar Sangeeth</td><td class="col-qual">Diploma in Mechatronics</td><td class="col-exp">1.5 Years</td><td class="col-rating"><span class="badge secondary">🟡 Good</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CROSS COMPANY SELECTION -->
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>6. Multi-Company Demand Analysis</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box teal-accent">
+                    <strong>Aggregate Overview:</strong> This section highlights the candidates who generated the highest demand across the network, being selected (in either Top or Reserve categories) by multiple German companies.
+                </div>
+                
+                <h3>Highest Demand (Selected by ALL 5 Companies)</h3>
+                <ul class="analysis-list">
+                    <li>
+                        <strong><span class="candidate-code">KH 08</span> Simranjit Singh</strong> 
+                        <span class="demand-companies">Selected by: STRABAG (Top), SPL Powerlines (Top), SPITZKE (Top), DB Bahnbau, BUG SE (Top)</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 09</span> Sruthi Sagar Sangeeth K K</strong> 
+                        <span class="demand-companies">Selected by: STRABAG (Top), SPL Powerlines, SPITZKE (Top), DB Bahnbau, BUG SE</span>
+                    </li>
+                </ul>
+
+                <h3>High Demand (Selected by 4 Companies)</h3>
+                <ul class="analysis-list">
+                    <li>
+                        <strong><span class="candidate-code">KH 02</span> Hameed Roshan PN</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPL Powerlines, SPITZKE, BUG SE</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 05</span> Sandip Phapale</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPITZKE, DB Bahnbau, BUG SE</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 18</span> Sanil P M</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPL Powerlines, SPITZKE, DB Bahnbau</span>
+                    </li>
+                </ul>
+
+                <h3>Moderate Demand (Selected by 3 Companies)</h3>
+                <ul class="analysis-list">
+                    <li>
+                        <strong><span class="candidate-code">KH 01</span> Albin Saju</strong> 
+                        <span class="demand-companies">Selected by: STRABAG (Top), SPITZKE (Top), DB Bahnbau (Top)</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 04</span> Nimish Thomas</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPL Powerlines (Top), BUG SE (Top)</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 06</span> Santosh Jadhav</strong> 
+                        <span class="demand-companies">Selected by: SPITZKE, DB Bahnbau, BUG SE</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 13</span> Gokul Krishna PK</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPITZKE, DB Bahnbau</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 15</span> Joyal PA</strong> 
+                        <span class="demand-companies">Selected by: STRABAG (Top), SPL Powerlines, DB Bahnbau</span>
+                    </li>
+                    <li>
+                        <strong><span class="candidate-code">KH 20</span> Yadhulkrishna T M</strong> 
+                        <span class="demand-companies">Selected by: STRABAG, SPL Powerlines, DB Bahnbau</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: MOBILIZATION ACTION PLAN -->
+    <h2 class="section-title">IV. Strategic Action Plan: 27 Vacancy Mobilization</h2>
+    <div class="accordion-item">
+        <button class="accordion-header">
+            <h2>Next Steps (Pre-September Deadline)</h2>
+            <span class="icon">+</span>
+        </button>
+        <div class="accordion-content">
+            <div class="content-inner">
+                <div class="highlight-box teal-accent">
+                    <strong>Urgent Mandate:</strong> To fill the 27 critical Overhead Line Technician vacancies prior to the InnoTrans exhibition in September, KASE will execute the following rapid mobilization strategy aligned with the supplier's revised criteria.
+                </div>
+                
+                <h3>Phase 1: Direct Mobilization (The Fast Track)</h3>
+                <ul>
+                    <li><strong>Target Profile:</strong> B.Tech/Diploma holders in Electrical/Mechanical streams, aged 18-35, with a willingness for hands-on, physically demanding blue-collar site work.</li>
+                    <li><strong>Institutional Network Activation:</strong> Initiate official communication with KMRL and KSEB technical heads to access their active OHE (Overhead Equipment) and traction power contract workforce.</li>
+                    <li><strong>Polytechnic & Engineering Colleges:</strong> Send official letters directly to the principals and placement officers of polytechnic and engineering colleges across the state to mobilize eligible alumni.</li>
+                    <li><strong>Class A Contractor Outreach:</strong> Directly engage with prominent licensed contractors to mobilize their experienced, high-voltage field workers.</li>
+                </ul>
+
+                <h3>Phase 2: Digital Campaign & Virtual Pre-Screening</h3>
+                <ul>
+                    <li><strong>Targeted Media:</strong> Deploy high-definition digital assets in Malayalam specifically via WhatsApp to polytechnic alumni and technical field-worker groups, enforcing the blue-collar nature of the job.</li>
+                    <li><strong>Rapid Filtration:</strong> Utilize a dedicated Google Form portal to capture age, qualifications, and exact years of high-voltage site experience.</li>
+                    <li><strong>Virtual Speed Interviews:</strong> Conduct immediate virtual screening to evaluate English proficiency, technical communication, and physical readiness before final submission to DB AG.</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
 </div>
+
+<!-- JavaScript for Accordion Logic -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const accordions = document.querySelectorAll('.accordion-header');
+        
+        // Open active accordions on load
+        accordions.forEach(acc => {
+            if (acc.classList.contains('active')) {
+                const content = acc.nextElementSibling;
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+
+        accordions.forEach(acc => {
+            acc.addEventListener('click', function() {
+                // Toggle active class on the clicked button
+                this.classList.toggle('active');
+                
+                // Get the content div
+                const content = this.nextElementSibling;
+                
+                // Animate open/close
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                } 
+            });
+        });
+    });
+</script>
 
 </body>
 </html>
