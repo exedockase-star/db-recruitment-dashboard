@@ -124,8 +124,8 @@
         <div id="feedbackAlert" class="alert-box"></div>
 
         <div class="footer-actions">
-            <button class="link-btn" onclick="openSpotModal()">+ Spot Registration</button>
-            <button class="link-btn" onclick="openAdminModal()">📊 View & Export Data</button>
+            <button class="link-btn" onclick="openSpotModal()" type="button">+ Spot Registration</button>
+            <button class="link-btn" onclick="openAdminModal()" type="button">📊 View & Export Data</button>
         </div>
     </div>
     <div class="app-footer">Kerala Academy for Skills Excellence &copy; 2026</div>
@@ -136,7 +136,7 @@
     <div class="admin-card" style="max-width: 450px;">
         <div class="admin-header">
             <h2>Spot Registration</h2>
-            <button class="btn-close" onclick="closeSpotModal()">&times;</button>
+            <button class="btn-close" onclick="closeSpotModal()" type="button">&times;</button>
         </div>
         <div class="admin-body">
             <form onsubmit="handleSpotRegistration(event)">
@@ -163,12 +163,12 @@
     <div class="admin-card">
         <div class="admin-header">
             <h2>Live Google Sheet Records</h2>
-            <button class="btn-close" onclick="closeAdminModal()">&times;</button>
+            <button class="btn-close" onclick="closeAdminModal()" type="button">&times;</button>
         </div>
         <div class="admin-body">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                 <div id="statsText" style="font-size: 14px; font-weight: 600; color: var(--primary-blue);">Loading data from Google Sheet...</div>
-                <button class="btn-export" onclick="exportToExcel()">📥 Export to Excel / CSV</button>
+                <button class="btn-export" onclick="exportToExcel()" type="button">📥 Export to Excel / CSV</button>
             </div>
             <div class="table-responsive">
                 <table>
@@ -183,18 +183,15 @@
 </div>
 
 <script>
-    // ⚠️ PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzJybJzZPv-ZxmxkQfQ4FN3GFxmHTSuKcHJasYP4NvoK4dhHnKxkcm_iXlWNGXWI8U4/exec";
 
     let candidates = [];
 
-    // Fetch data from Google Sheet on load
     window.onload = function() {
         fetchCandidates();
     };
 
     function fetchCandidates() {
-        if (WEB_APP_URL.includes("YOUR_GOOGLE_")) return;
         fetch(WEB_APP_URL)
             .then(res => res.json())
             .then(data => { candidates = data; })
@@ -208,8 +205,8 @@
         const btn = document.getElementById('submitBtn');
         
         let rawCode = inputField.value.trim().toUpperCase().replace(/\s+/g, '');
-        
-        // Refresh local list first to get latest google sheet rows
+        btn.innerText = "Checking...";
+
         fetch(WEB_APP_URL)
             .then(res => res.json())
             .then(data => {
@@ -217,6 +214,7 @@
                 let candidate = candidates.find(c => c.code.toUpperCase() === rawCode);
 
                 if (!candidate) {
+                    btn.innerText = "Mark Attendance";
                     alertBox.className = "alert-box error";
                     alertBox.innerHTML = `⚠️ Error: Code <strong>"${inputField.value}"</strong> not found in Google Sheet!`;
                     inputField.value = "";
@@ -225,6 +223,7 @@
                 }
 
                 if (candidate.status === "Present") {
+                    btn.innerText = "Mark Attendance";
                     alertBox.className = "alert-box warning";
                     alertBox.innerHTML = `⚠️ Notice: <strong>${candidate.name} (${candidate.code})</strong> was already marked present at ${candidate.time}!`;
                 } else {
@@ -234,12 +233,11 @@
                     candidate.status = "Present";
                     candidate.time = timeString;
 
-                    // Send update to Google Sheet background
                     btn.innerText = "Syncing...";
                     fetch(WEB_APP_URL, {
                         method: "POST",
                         mode: "no-cors",
-                        headers: { "Content-Type": "application/json" },
+                        headers: { "Content-Type": "text/plain" },
                         body: JSON.stringify({ action: "markPresent", code: candidate.code, time: timeString })
                     }).then(() => {
                         btn.innerText = "Mark Attendance";
@@ -249,6 +247,11 @@
                 }
                 inputField.value = "";
                 inputField.focus();
+            })
+            .catch(err => {
+                btn.innerText = "Mark Attendance";
+                alertBox.className = "alert-box error";
+                alertBox.innerHTML = `⚠️ Connection Error. Please check internet connection.`;
             });
     }
 
@@ -269,7 +272,7 @@
         fetch(WEB_APP_URL, {
             method: "POST",
             mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "text/plain" },
             body: JSON.stringify({ action: "spotRegister", code: code, name: name + " (Spot)", qual: qual, time: timeString })
         }).then(() => {
             spotBtn.innerText = "Register & Mark Present";
@@ -286,11 +289,18 @@
     }
 
     function openAdminModal() {
+        const statsText = document.getElementById('statsText');
+        statsText.innerText = "Fetching records from Google Sheet...";
+        
         fetch(WEB_APP_URL)
             .then(res => res.json())
             .then(data => {
                 candidates = data;
                 renderAdminTable();
+                document.getElementById('adminModal').classList.remove('hidden');
+            })
+            .catch(err => {
+                statsText.innerText = "Error loading records from Google Sheet.";
                 document.getElementById('adminModal').classList.remove('hidden');
             });
     }
