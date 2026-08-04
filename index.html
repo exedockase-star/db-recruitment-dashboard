@@ -184,25 +184,25 @@
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzJybJzZPv-ZxmxkQfQ4FN3GFxmHTSuKcHJasYP4NvoK4dhHnKxkcm_iXlWNGXWI8U4/exec";
-
     let candidates = [];
 
-    window.onload = function() {
-        fetchCandidates();
-    };
+    // JSONP Helper for instant GET requests
+    function loadSheetData(callback) {
+        const callbackName = 'jsonp_cb_' + Math.round(Math.random() * 1000000);
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            document.body.removeChild(scriptTag);
+            if (callback) callback(data);
+        };
 
-    function fetchCandidates() {
-        // Using JSONP / script injection technique to completely bypass CORS block on GET requests
         const scriptTag = document.createElement('script');
-        scriptTag.src = `${WEB_APP_URL}?callback=handleDataResponse`;
+        scriptTag.src = `${WEB_APP_URL}?callback=${callbackName}`;
+        scriptTag.onerror = function() {
+            delete window[callbackName];
+            if (scriptTag.parentNode) document.body.removeChild(scriptTag);
+            if (callback) callback(null);
+        };
         document.body.appendChild(scriptTag);
-    }
-
-    // Global callback for fetching data cleanly
-    function handleDataResponse(data) {
-        if (data && Array.isArray(data)) {
-            candidates = data;
-        }
     }
 
     function handleAttendanceSubmit(e) {
@@ -214,15 +214,15 @@
         let rawCode = inputField.value.trim().toUpperCase().replace(/\s+/g, '');
         btn.innerText = "Checking...";
 
-        // Fetch fresh list using JSONP wrapper
-        const callbackName = 'tempFetch_' + Math.round(Math.random() * 100000);
-        window[callbackName] = function(data) {
-            delete window[callbackName];
-            
-            if (data && Array.isArray(data)) {
-                candidates = data;
+        loadSheetData(function(data) {
+            if (!data) {
+                btn.innerText = "Mark Attendance";
+                alertBox.className = "alert-box error";
+                alertBox.innerHTML = `⚠️ Connection Error. Please check your internet connection.`;
+                return;
             }
-            
+
+            candidates = data;
             let candidate = candidates.find(c => c.code.toUpperCase() === rawCode);
 
             if (!candidate) {
@@ -248,8 +248,6 @@
                 candidate.time = timeString;
 
                 btn.innerText = "Syncing...";
-                
-                // Using an invisible form post to Google Apps Script to bypass POST CORS blocks completely
                 sendPostRequest({ action: "markPresent", code: candidate.code, time: timeString }, function() {
                     btn.innerText = "Mark Attendance";
                     alertBox.className = "alert-box success";
@@ -258,11 +256,7 @@
                     inputField.focus();
                 });
             }
-        };
-
-        const scriptTag = document.createElement('script');
-        scriptTag.src = `${WEB_APP_URL}?callback=${callbackName}`;
-        document.body.appendChild(scriptTag);
+        });
     }
 
     function handleSpotRegistration(e) {
@@ -276,7 +270,6 @@
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
         spotBtn.innerText = "Registering...";
-        
         sendPostRequest({ action: "spotRegister", code: code, name: name + " (Spot)", qual: qual, time: timeString }, function() {
             spotBtn.innerText = "Register & Mark Present";
             closeSpotModal();
@@ -287,11 +280,9 @@
             const alertBox = document.getElementById('feedbackAlert');
             alertBox.className = "alert-box success";
             alertBox.innerHTML = `✅ Spot Registration Synced to Sheet!<br>Code: <strong>${code} - ${name}</strong>`;
-            fetchCandidates();
         });
     }
 
-    // Helper function to send seamless POST requests to Google Apps Script without CORS restrictions
     function sendPostRequest(payload, callback) {
         const iframeName = 'hidden_iframe_' + Date.now();
         const iframe = document.createElement('iframe');
@@ -317,26 +308,22 @@
             document.body.removeChild(form);
             document.body.removeChild(iframe);
             if (callback) callback();
-        }, 800);
+        }, 1000);
     }
 
     function openAdminModal() {
         const statsText = document.getElementById('statsText');
         statsText.innerText = "Fetching records from Google Sheet...";
-        
-        const callbackName = 'adminFetch_' + Math.round(Math.random() * 100000);
-        window[callbackName] = function(data) {
-            delete window[callbackName];
-            if (data && Array.isArray(data)) {
-                candidates = data;
-            }
-            renderAdminTable();
-            document.getElementById('adminModal').classList.remove('hidden');
-        };
+        document.getElementById('adminModal').classList.remove('hidden');
 
-        const scriptTag = document.createElement('script');
-        scriptTag.src = `${WEB_APP_URL}?callback=${callbackName}`;
-        document.body.appendChild(scriptTag);
+        loadSheetData(function(data) {
+            if (data) {
+                candidates = data;
+                renderAdminTable();
+            } else {
+                statsText.innerText = "Error loading records from Google Sheet.";
+            }
+        });
     }
 
     function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
