@@ -185,14 +185,26 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzJybJzZPv-ZxmxkQfQ4FN3GFxmHTSuKcHJasYP4NvoK4dhHnKxkcm_iXlWNGXWI8U4/exec";
     let candidates = [];
+    let localAttendanceCache = JSON.parse(localStorage.getItem('kase_local_cache') || '{}');
 
-    // JSONP Helper for instant GET requests
     function loadSheetData(callback) {
         const callbackName = 'jsonp_cb_' + Math.round(Math.random() * 1000000);
         window[callbackName] = function(data) {
             delete window[callbackName];
-            document.body.removeChild(scriptTag);
-            if (callback) callback(data);
+            if (scriptTag.parentNode) document.body.removeChild(scriptTag);
+            
+            if (data && Array.isArray(data)) {
+                // Apply local cache override so newly marked attendance shows up instantly
+                data.forEach(c => {
+                    let upperCode = c.code.toUpperCase();
+                    if (localAttendanceCache[upperCode]) {
+                        c.status = "Present";
+                        c.time = localAttendanceCache[upperCode].time;
+                    }
+                });
+                candidates = data;
+            }
+            if (callback) callback(candidates);
         };
 
         const scriptTag = document.createElement('script');
@@ -222,7 +234,6 @@
                 return;
             }
 
-            candidates = data;
             let candidate = candidates.find(c => c.code.toUpperCase() === rawCode);
 
             if (!candidate) {
@@ -247,6 +258,10 @@
                 candidate.status = "Present";
                 candidate.time = timeString;
 
+                // Save to local cache so view table shows it instantly
+                localAttendanceCache[candidate.code.toUpperCase()] = { time: timeString };
+                localStorage.setItem('kase_local_cache', JSON.stringify(localAttendanceCache));
+
                 btn.innerText = "Syncing...";
                 sendPostRequest({ action: "markPresent", code: candidate.code, time: timeString }, function() {
                     btn.innerText = "Mark Attendance";
@@ -270,6 +285,11 @@
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
         spotBtn.innerText = "Registering...";
+        
+        // Cache locally instantly
+        localAttendanceCache[code] = { time: timeString };
+        localStorage.setItem('kase_local_cache', JSON.stringify(localAttendanceCache));
+
         sendPostRequest({ action: "spotRegister", code: code, name: name + " (Spot)", qual: qual, time: timeString }, function() {
             spotBtn.innerText = "Register & Mark Present";
             closeSpotModal();
@@ -318,7 +338,6 @@
 
         loadSheetData(function(data) {
             if (data) {
-                candidates = data;
                 renderAdminTable();
             } else {
                 statsText.innerText = "Error loading records from Google Sheet.";
