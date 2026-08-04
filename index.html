@@ -139,7 +139,7 @@
             <button class="btn-close" onclick="closeSpotModal()" type="button">&times;</button>
         </div>
         <div class="admin-body">
-            <form onsubmit="handleSpotRegistration(event)">
+            <form id="spotForm" onsubmit="handleSpotRegistration(event)">
                 <div class="form-group">
                     <label>Assigned Code (e.g. SP01)</label>
                     <input type="text" id="spotCode" class="form-control code-input" placeholder="SP01" required>
@@ -194,7 +194,6 @@
             if (scriptTag.parentNode) document.body.removeChild(scriptTag);
             
             if (data && Array.isArray(data)) {
-                // Apply local cache override so newly marked attendance shows up instantly
                 data.forEach(c => {
                     let upperCode = c.code.toUpperCase();
                     if (localAttendanceCache[upperCode]) {
@@ -258,7 +257,6 @@
                 candidate.status = "Present";
                 candidate.time = timeString;
 
-                // Save to local cache so view table shows it instantly
                 localAttendanceCache[candidate.code.toUpperCase()] = { time: timeString };
                 localStorage.setItem('kase_local_cache', JSON.stringify(localAttendanceCache));
 
@@ -274,6 +272,9 @@
         });
     }
 
+    function openSpotModal() { document.getElementById('spotModal').classList.remove('hidden'); }
+    function closeSpotModal() { document.getElementById('spotModal').classList.add('hidden'); }
+
     function handleSpotRegistration(e) {
         e.preventDefault();
         const code = document.getElementById('spotCode').value.trim().toUpperCase();
@@ -286,20 +287,18 @@
 
         spotBtn.innerText = "Registering...";
         
-        // Cache locally instantly
         localAttendanceCache[code] = { time: timeString };
         localStorage.setItem('kase_local_cache', JSON.stringify(localAttendanceCache));
 
         sendPostRequest({ action: "spotRegister", code: code, name: name + " (Spot)", qual: qual, time: timeString }, function() {
             spotBtn.innerText = "Register & Mark Present";
             closeSpotModal();
-            document.getElementById('spotCode').value = "";
-            document.getElementById('spotName').value = "";
-            document.getElementById('spotQual').value = "";
+            document.getElementById('spotForm').reset();
 
             const alertBox = document.getElementById('feedbackAlert');
             alertBox.className = "alert-box success";
             alertBox.innerHTML = `✅ Spot Registration Synced to Sheet!<br>Code: <strong>${code} - ${name}</strong>`;
+            document.getElementById('scanCodeInput').focus();
         });
     }
 
