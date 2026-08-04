@@ -192,10 +192,17 @@
     };
 
     function fetchCandidates() {
-        fetch(WEB_APP_URL)
-            .then(res => res.json())
-            .then(data => { candidates = data; })
-            .catch(err => console.error("Error fetching data:", err));
+        // Using JSONP / script injection technique to completely bypass CORS block on GET requests
+        const scriptTag = document.createElement('script');
+        scriptTag.src = `${WEB_APP_URL}?callback=handleDataResponse`;
+        document.body.appendChild(scriptTag);
+    }
+
+    // Global callback for fetching data cleanly
+    function handleDataResponse(data) {
+        if (data && Array.isArray(data)) {
+            candidates = data;
+        }
     }
 
     function handleAttendanceSubmit(e) {
@@ -207,56 +214,56 @@
         let rawCode = inputField.value.trim().toUpperCase().replace(/\s+/g, '');
         btn.innerText = "Checking...";
 
-        fetch(WEB_APP_URL)
-            .then(res => res.json())
-            .then(data => {
+        // Fetch fresh list using JSONP wrapper
+        const callbackName = 'tempFetch_' + Math.round(Math.random() * 100000);
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            
+            if (data && Array.isArray(data)) {
                 candidates = data;
-                let candidate = candidates.find(c => c.code.toUpperCase() === rawCode);
+            }
+            
+            let candidate = candidates.find(c => c.code.toUpperCase() === rawCode);
 
-                if (!candidate) {
-                    btn.innerText = "Mark Attendance";
-                    alertBox.className = "alert-box error";
-                    alertBox.innerHTML = `⚠️ Error: Code <strong>"${inputField.value}"</strong> not found in Google Sheet!`;
-                    inputField.value = "";
-                    inputField.focus();
-                    return;
-                }
-
-                if (candidate.status === "Present") {
-                    btn.innerText = "Mark Attendance";
-                    alertBox.className = "alert-box warning";
-                    alertBox.innerHTML = `⚠️ Notice: <strong>${candidate.name} (${candidate.code})</strong> was already marked present at ${candidate.time}!`;
-                } else {
-                    const now = new Date();
-                    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    
-                    candidate.status = "Present";
-                    candidate.time = timeString;
-
-                    btn.innerText = "Syncing...";
-                    fetch(WEB_APP_URL, {
-                        method: "POST",
-                        mode: "no-cors",
-                        headers: { "Content-Type": "text/plain" },
-                        body: JSON.stringify({ action: "markPresent", code: candidate.code, time: timeString })
-                    }).then(() => {
-                        btn.innerText = "Mark Attendance";
-                        alertBox.className = "alert-box success";
-                        alertBox.innerHTML = `✅ Attendance Marked & Synced!<br><strong>${candidate.name} (${candidate.code})</strong>`;
-                    });
-                }
-                inputField.value = "";
-                inputField.focus();
-            })
-            .catch(err => {
+            if (!candidate) {
                 btn.innerText = "Mark Attendance";
                 alertBox.className = "alert-box error";
-                alertBox.innerHTML = `⚠️ Connection Error. Please check internet connection.`;
-            });
-    }
+                alertBox.innerHTML = `⚠️ Error: Code <strong>"${inputField.value}"</strong> not found in Google Sheet!`;
+                inputField.value = "";
+                inputField.focus();
+                return;
+            }
 
-    function openSpotModal() { document.getElementById('spotModal').classList.remove('hidden'); }
-    function closeSpotModal() { document.getElementById('spotModal').classList.add('hidden'); }
+            if (candidate.status === "Present") {
+                btn.innerText = "Mark Attendance";
+                alertBox.className = "alert-box warning";
+                alertBox.innerHTML = `⚠️ Notice: <strong>${candidate.name} (${candidate.code})</strong> was already marked present at ${candidate.time}!`;
+                inputField.value = "";
+                inputField.focus();
+            } else {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                
+                candidate.status = "Present";
+                candidate.time = timeString;
+
+                btn.innerText = "Syncing...";
+                
+                // Using an invisible form post to Google Apps Script to bypass POST CORS blocks completely
+                sendPostRequest({ action: "markPresent", code: candidate.code, time: timeString }, function() {
+                    btn.innerText = "Mark Attendance";
+                    alertBox.className = "alert-box success";
+                    alertBox.innerHTML = `✅ Attendance Marked & Synced!<br><strong>${candidate.name} (${candidate.code})</strong>`;
+                    inputField.value = "";
+                    inputField.focus();
+                });
+            }
+        };
+
+        const scriptTag = document.createElement('script');
+        scriptTag.src = `${WEB_APP_URL}?callback=${callbackName}`;
+        document.body.appendChild(scriptTag);
+    }
 
     function handleSpotRegistration(e) {
         e.preventDefault();
@@ -269,12 +276,8 @@
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
         spotBtn.innerText = "Registering...";
-        fetch(WEB_APP_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ action: "spotRegister", code: code, name: name + " (Spot)", qual: qual, time: timeString })
-        }).then(() => {
+        
+        sendPostRequest({ action: "spotRegister", code: code, name: name + " (Spot)", qual: qual, time: timeString }, function() {
             spotBtn.innerText = "Register & Mark Present";
             closeSpotModal();
             document.getElementById('spotCode').value = "";
@@ -288,22 +291,54 @@
         });
     }
 
+    // Helper function to send seamless POST requests to Google Apps Script without CORS restrictions
+    function sendPostRequest(payload, callback) {
+        const iframeName = 'hidden_iframe_' + Date.now();
+        const iframe = document.createElement('iframe');
+        iframe.name = iframeName;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = WEB_APP_URL;
+        form.target = iframeName;
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'postData';
+        input.value = JSON.stringify(payload);
+        form.appendChild(input);
+
+        document.body.appendChild(form);
+        form.submit();
+
+        setTimeout(function() {
+            document.body.removeChild(form);
+            document.body.removeChild(iframe);
+            if (callback) callback();
+        }, 800);
+    }
+
     function openAdminModal() {
         const statsText = document.getElementById('statsText');
         statsText.innerText = "Fetching records from Google Sheet...";
         
-        fetch(WEB_APP_URL)
-            .then(res => res.json())
-            .then(data => {
+        const callbackName = 'adminFetch_' + Math.round(Math.random() * 100000);
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            if (data && Array.isArray(data)) {
                 candidates = data;
-                renderAdminTable();
-                document.getElementById('adminModal').classList.remove('hidden');
-            })
-            .catch(err => {
-                statsText.innerText = "Error loading records from Google Sheet.";
-                document.getElementById('adminModal').classList.remove('hidden');
-            });
+            }
+            renderAdminTable();
+            document.getElementById('adminModal').classList.remove('hidden');
+        };
+
+        const scriptTag = document.createElement('script');
+        scriptTag.src = `${WEB_APP_URL}?callback=${callbackName}`;
+        document.body.appendChild(scriptTag);
     }
+
     function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
 
     function renderAdminTable() {
